@@ -9,6 +9,7 @@ import Animated, {useAnimatedStyle, useSharedValue, withTiming, withSpring} from
 import { Stack, router, useNavigation, useRouter } from 'expo-router';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { Feather } from '@expo/vector-icons';
+import { getDownloadURL, getStorage, ref } from 'firebase/storage';
 
 
 interface Product {
@@ -53,18 +54,26 @@ const order = (props: any) => {
     opacity: withTiming(isAdding ? 0.5 : 1, { duration: 200 }),
     transform: [{ scale: withSpring(isAdding ? 1.1 : 1) }],
   }));
-  const navigation = useNavigation();
 
   
   useEffect(() => {
     const fetchGoods = async () => {
-      const querySnapshot  = await getDocs(collection(db, "GOODS"));
-      const newProducts: Product[] = querySnapshot.docs.map(doc => doc.data() as Product);
+      const querySnapshot = await getDocs(collection(db, "GOODS"));
+      const newProducts: Product[] = [];
+      for (const doc of querySnapshot.docs) {
+        const productData = doc.data() as Product;
+        // Fetch image URL from Firebase Storage
+        const storage = getStorage();
+        const imageRef = ref(storage, `product_images/${Date.now()}_${productData.productName}`);
+        const imageUrl = await getDownloadURL(imageRef);
+        newProducts.push({ ...productData, imageUri: imageUrl });
+      }
       setProducts(newProducts);
       console.log("Products: ", newProducts);
     };
     fetchGoods();
   }, []);
+
 
   useEffect(() => {
     const uniqueCategories = [...new Set(products.map(product => product.catergory))];
@@ -79,7 +88,7 @@ const order = (props: any) => {
       }
     };
     loadCart();
-  }, []);
+  }, []);                           
 
   
   const handleAddToCart = async () => {
@@ -196,7 +205,7 @@ const order = (props: any) => {
   
   return (
     <View style={styles.container}>
-    <Stack.Screen options={{headerShown: true, title: 'Order', headerLeft: () => (<TouchableOpacity onPress={() => router.back()} style={styles.backButton}><Feather name="arrow-left" size={24} color="black" /></TouchableOpacity>) }}/>
+    <Stack.Screen options={{headerShown: true, title: 'Order', headerLeft: () => (<TouchableOpacity onPress={() => router.replace('/(usertabs)/home')} style={styles.backButton}><Feather name="arrow-left" size={24} color="black" /></TouchableOpacity>) }}/>
       <ScrollView>
         {categories.map(renderCategoryProducts)}
       </ScrollView>

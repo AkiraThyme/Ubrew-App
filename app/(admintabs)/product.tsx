@@ -5,6 +5,7 @@ import { router } from 'expo-router';
 import colors from '@/constants/Colors';
 import { dbff } from '@/config/FirebaseConfig';
 import { collection, deleteDoc, doc, getDocs, query, where } from 'firebase/firestore';
+import { deleteObject, getStorage, ref } from 'firebase/storage';
 
 
 
@@ -47,13 +48,42 @@ const product = () => {
       const q = query(productsCollection, where('productName', '==', productNameToDelete));
       const querySnapshot = await getDocs(q);
   
-      querySnapshot.forEach((queryDocumentSnapshot) => { // Renamed for clarity 
-        const documentRef = queryDocumentSnapshot.ref;  // Get the reference
-        deleteDoc(documentRef); // Now you can use doc()
-    });
-
-    setProducts(products.filter(product => product.productName !== productNameToDelete)); 
-      console.log('Product(s) deleted!'); 
+      const storage = getStorage();
+  
+      for (const queryDocumentSnapshot of querySnapshot.docs) {
+        const documentRef = queryDocumentSnapshot.ref;
+        const productData = queryDocumentSnapshot.data();
+  
+        // Extract the image URL from the product data
+        const imageUrl = productData.imageUri;
+  
+        if (imageUrl) {
+          // Get a reference to the image in Firebase Storage
+          const imageRef = ref(storage, imageUrl);
+  
+          // Delete the image from Firebase Storage
+          await deleteObject(imageRef)
+            .then(() => {
+              console.log(`Image ${imageUrl} deleted successfully.`);
+            })
+            .catch((error) => {
+              console.error(`Error deleting image ${imageUrl}:`, error);
+            });
+        }
+  
+        // Delete the document from Firestore
+        await deleteDoc(documentRef)
+          .then(() => {
+            console.log(`Document ${documentRef.id} deleted successfully.`);
+          })
+          .catch((error) => {
+            console.error(`Error deleting document ${documentRef.id}:`, error);
+          });
+      }
+  
+      // Update the state to remove the deleted product
+      setProducts(products.filter(product => product.productName !== productNameToDelete));
+      console.log('Product(s) deleted!');
     } catch (error) {
       console.error('Error deleting product:', error);
     }
@@ -105,12 +135,12 @@ const product = () => {
                 <Image source={{ uri: product.imageUri }} style={styles.imageView}/>
                 <View style={styles.textContainer}>
                   <Text>Product Name: </Text>
-                  <Text style={styles.textCard}>{product.productName}</Text>
+                  <Text style={styles.textCard} numberOfLines={3} ellipsizeMode='tail'>{product.productName}</Text>
                   <Text>Barcode: </Text>
-                  <Text style={styles.textCard}>{product.barcodeValue}</Text>
+                  <Text style={styles.textCard} numberOfLines={1} ellipsizeMode='tail'>{product.barcodeValue}</Text>
                   <Text style={styles.textCard}>Stock Amount: {product.count}</Text> 
                 </View>
-                <TouchableOpacity onPress={() => toggleDropdown(product)}>
+                <TouchableOpacity onPress={() => toggleDropdown(product)} style={styles.iconContainer}>
                   <Entypo name='dots-three-vertical' size={20} style={styles.icon}/>
                 </TouchableOpacity>
                 {product === currentSelectedProduct && ( // Check for selected product
@@ -122,7 +152,7 @@ const product = () => {
                     <Text>Delete</Text>
                   </TouchableOpacity>
                 </View>
-              )}
+                )}
               </TouchableOpacity>
             );
             })}
@@ -250,9 +280,13 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 25 
   },
+  iconContainer: {
+    position: 'absolute',
+    top: 10,
+    right: 10,
+  },
   icon: {
-   left: 10,
-   top: 10
+    padding: 5,
   },
   dropdown: {
     position: 'absolute',

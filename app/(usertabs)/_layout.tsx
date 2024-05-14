@@ -6,6 +6,10 @@ import { AntDesign } from '@expo/vector-icons';
 import colors from '@/constants/Colors';
 
 
+export const unstable_settings = {
+  // ensures any route can link back to `/`
+  initialRouteName: "home",
+};
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -14,6 +18,7 @@ function TabBarIcon(props: {
 }) {
   return <FontAwesome size={28} style={{ marginBottom: -3 }} {...props} />;
 }
+
 
 export default function TabLayout() {
 
@@ -34,3 +39,4 @@ export default function TabLayout() {
       </Drawer>
   );
 }
+

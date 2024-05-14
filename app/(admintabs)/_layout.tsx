@@ -14,6 +14,11 @@ function TabBarIcon(props: {
   return <FontAwesome size={20} style={{ marginBottom: -3 }} {...props} />;
 }
 
+export const unstable_settings = {
+  // ensures any route can link back to `/`
+  initialRouteName: "index",
+};
+
 export default function TabLayout() {
   const { isLoaded, isSignedIn} = useAuth();
   const router = useRouter();

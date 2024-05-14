@@ -44,6 +44,10 @@ const ViewCart = () => {
     </TouchableOpacity>
   );
 
+  const removeProduct = () => {
+    
+  }
+
   // Calculate total price
   const totalPrice = cart.reduce((total, product) => {
     return total + (product.price * product.count);
@@ -55,7 +59,7 @@ const ViewCart = () => {
     <ScrollView style={styles.viewContainer}>
       <TouchableOpacity style={styles.DeliveryContainer}>
           <View style={styles.itemImageContainer}>
-            <Image source={require('@/assets/images/logohd')} style={styles.itemImageDelivery}/>
+            <Image source={require('@/assets/images/logohd.png')} style={styles.itemImageDelivery}/>
           </View>
           <View style={{flex: 1, marginTop: 17}}>
           <Text style={styles.estimatedDeliveryText}>Estimated Delivery</Text>
