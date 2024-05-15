@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
-    fontFamily: 'SpaceMono'
+    fontFamily: 'Physis'
   },
   /** Header */
   header: {

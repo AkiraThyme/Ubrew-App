@@ -4,6 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import colors from '@/constants/Colors';
 import { Stack, router } from 'expo-router';
 import { Feather } from '@expo/vector-icons';
+import Colors from '@/constants/Colors';
 
 interface Product { 
  barcodeValue: string;
@@ -30,23 +31,27 @@ const ViewCart = () => {
     loadCart();
   }, []);
 
-  const renderProduct = (product: Product) => (
-    <TouchableOpacity key={product.barcodeValue} style={styles.cartItemContainer}>
+  const removeProduct = async (barcodeValue: string) => {
+    const updatedCart = cart.filter(product => product.barcodeValue !== barcodeValue);
+    setCart(updatedCart);
+    await AsyncStorage.setItem(CART_STORAGE_KEY, JSON.stringify(updatedCart));
+  };
 
+  const renderProduct = (product: Product) => (
+    <View key={product.barcodeValue} style={styles.cartItemContainer}>
       <View style={styles.itemImageContainer}>
         <Image source={{ uri: product.imageUri }} style={styles.itemImage} />
       </View>
       <View style={styles.itemInfoContainer}>
         <Text style={styles.itemTitle}>{product.productName}</Text>
-        <Text style={styles.itemDescription}>{product.description}</Text>
+        <Text style={styles.itemDescription} numberOfLines={2} ellipsizeMode='tail'>{product.description}</Text>
         <Text style={styles.itemPrice}>₱{product.price} x {product.count}</Text>
       </View>
-    </TouchableOpacity>
+      <TouchableOpacity onPress={() => removeProduct(product.barcodeValue)} style={styles.removeButton}>
+        <Feather name="trash-2" size={24} color="black" />
+      </TouchableOpacity>
+    </View>
   );
-
-  const removeProduct = () => {
-    
-  }
 
   // Calculate total price
   const totalPrice = cart.reduce((total, product) => {
@@ -55,7 +60,18 @@ const ViewCart = () => {
 
   return (
     <View style={styles.container}>
-    <Stack.Screen options={{headerShown: true, title: 'Cart', headerLeft: () => (<TouchableOpacity onPress={() => router.back()} style={styles.backButton}><Feather name="arrow-left" size={24} color="black" /></TouchableOpacity>) }}/>
+    <Stack.Screen options={{headerShown: true, title: 'Cart', headerLeft: () => (<TouchableOpacity onPress={() => router.replace('/screens/order')} style={styles.backButton}><Feather name="arrow-left" size={24} color="black" /></TouchableOpacity>)  }}/>
+    <View style={styles.progress}>
+        <View style={styles.progressStep}>
+          <Text style={styles.progressText}>1</Text>
+        </View>
+        <View style={styles.progressStepActive}>
+          <Text style={styles.progressText}>2</Text>
+        </View>
+        <View style={styles.progressStep}>
+          <Text style={styles.progressText}>3</Text>
+        </View>
+      </View>
     <ScrollView style={styles.viewContainer}>
       <TouchableOpacity style={styles.DeliveryContainer}>
           <View style={styles.itemImageContainer}>
@@ -80,7 +96,7 @@ const ViewCart = () => {
       </View>
       <Text style={styles.seePriceButton}>See price breakdown</Text>
       <View style={styles.buttonContainer}> 
-        <TouchableOpacity style={styles.reviewButton} >
+        <TouchableOpacity style={styles.reviewButton} onPress={() => router.replace('/screens/checkOut')}>
           <Text style={styles.reviewButtonText}>Review payment and address</Text>
         </TouchableOpacity>
       </View>
@@ -100,7 +116,7 @@ const styles = StyleSheet.create({
     flexDirection: 'column', // Stack elements vertically
     justifyContent: 'flex-end', // Align at bottom
     alignItems: 'flex-start', // Align text to the left
-  paddingHorizontal: 10, // Add horizontal padding
+    paddingHorizontal: 10, // Add horizontal padding
   },
   textTime: {
     fontWeight: 'bold', 
@@ -213,7 +229,7 @@ const styles = StyleSheet.create({
     textAlign: 'center' 
   },
   reviewButton: {
-    backgroundColor: '#711A1A', // Uncle Brew's red color
+    backgroundColor: Colors.onebrown, // Uncle Brew's red color
     padding: 15,
     borderRadius: 8,
     marginBottom: 10,
@@ -236,5 +252,38 @@ const styles = StyleSheet.create({
   backButton: {
     marginLeft: 5, // Add left margin for spacing
     padding: 10,   // Add padding around the icon for a larger touch area
+  },
+  removeButton: {
+    padding: 5,
+  },
+  progress: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginVertical: 1,
+    marginTop: -60,
+    borderWidth: 1,
+    margin: 10,
+    padding: 6,
+    borderRadius: 20,
+    backgroundColor: colors.dirtywhite,
+  },
+  progressStep: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'lightgrey',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressStepActive: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: 'pink',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  progressText: {
+    color: '#fff',
   },
 })

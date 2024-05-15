@@ -1,10 +1,8 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { Link, Tabs, useRouter } from 'expo-router';
+import { Tabs } from 'expo-router';
 import { useAuth } from '@clerk/clerk-expo';
 import Colors from '@/constants/Colors';
-
-
 
 // You can explore the built-in icon families and icons on the web at https://icons.expo.fyi/
 function TabBarIcon(props: {
@@ -15,14 +13,10 @@ function TabBarIcon(props: {
 }
 
 export const unstable_settings = {
-  // ensures any route can link back to `/`
   initialRouteName: "index",
 };
 
 export default function TabLayout() {
-  const { isLoaded, isSignedIn} = useAuth();
-  const router = useRouter();
-
   return (
     <Tabs
       screenOptions={{
@@ -33,34 +27,34 @@ export default function TabLayout() {
           borderWidth: 1,
           borderRadius: 50,
           borderTopColor: Colors.onebrown,
-          backgroundColor: Colors.dirtywhite
+          backgroundColor: Colors.dirtywhite,
         },
         tabBarLabelStyle: {
           fontSize: 12,
           fontWeight: "bold",
-          marginBottom: 10
-        }
-      }}>
+          marginBottom: 10,
+        },
+      }}
+    >
       <Tabs.Screen
         name="index"
         options={{
           title: 'Home',
-          tabBarIcon: ({ color }) => <TabBarIcon name='home' color={color}/>,
+          tabBarIcon: ({ color }) => <TabBarIcon name="home" color={color} />,
         }}
       />
       <Tabs.Screen
         name="product"
         options={{
           title: 'Goods',
-          tabBarIcon: ({ color }) => <TabBarIcon name='dropbox' color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="dropbox" color={color} />,
         }}
       />
-
-      <Tabs.Screen 
-        name='adminsettings'
+      <Tabs.Screen
+        name="adminsettings"
         options={{
           title: 'Settings',
-          tabBarIcon: ({ color }) => <TabBarIcon name='gear' color={color} />,
+          tabBarIcon: ({ color }) => <TabBarIcon name="gear" color={color} />,
         }}
       />
     </Tabs>

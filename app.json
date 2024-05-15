@@ -28,7 +28,12 @@
       "permissions": [
         "android.permission.CAMERA",
         "android.permission.RECORD_AUDIO"
-      ]
+      ],
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAJMnC5qjSeiz2Etsa0HuZlO_Z4WbYc3AM"
+        }
+      }
     },
     "web": {
       "bundler": "metro",
@@ -58,6 +63,12 @@
           "locationAlwaysAndWhenInUsePermission": "Allow $(PRODUCT_NAME) to use your location."
         }
       ],
+        [
+          "@stripe/stripe-react-native",
+          {
+            "enableGooglePay": true
+          }
+        ],
       "expo-secure-store"
     ],
     "experiments": {

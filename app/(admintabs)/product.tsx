@@ -15,6 +15,7 @@ interface Product {
   description: string;
   imageUri: string;
   productName: string;
+  price: number;
 }
 
 
@@ -27,10 +28,6 @@ const product = () => {
   const [products, setProducts] = useState<Product[]>([]);
   const [currentSelectedProduct, setCurrentSelectedProduct] = useState<Product | null>(null); 
   const [productToDelete, setProductToDelete] = useState(null);
-
-  const navigateToAddGoods = () => {
-    router.replace('/components/addGoods')
-  }
 
   useEffect(() => {
     const fetchGoods = async () => {
@@ -134,11 +131,11 @@ const product = () => {
               <TouchableOpacity key={product.barcodeValue} style={styles.card}>
                 <Image source={{ uri: product.imageUri }} style={styles.imageView}/>
                 <View style={styles.textContainer}>
-                  <Text>Product Name: </Text>
-                  <Text style={styles.textCard} numberOfLines={3} ellipsizeMode='tail'>{product.productName}</Text>
-                  <Text>Barcode: </Text>
-                  <Text style={styles.textCard} numberOfLines={1} ellipsizeMode='tail'>{product.barcodeValue}</Text>
-                  <Text style={styles.textCard}>Stock Amount: {product.count}</Text> 
+                  <Text style={styles.textCard}>Product Name: </Text>
+                  <Text style={styles.textCard}>{product.productName}</Text>
+                  <Text style={styles.textCard}>Barcode: </Text>
+                  <Text style={styles.textCard}>{product.barcodeValue}</Text>
+                  <Text style={styles.textCard}>Price: ₱{product.price}</Text> 
                 </View>
                 <TouchableOpacity onPress={() => toggleDropdown(product)} style={styles.iconContainer}>
                   <Entypo name='dots-three-vertical' size={20} style={styles.icon}/>
@@ -163,7 +160,7 @@ const product = () => {
 
     <TouchableOpacity 
       style={styles.buttoncircle} 
-      onPress={navigateToAddGoods}
+      onPress={() => router.replace('/components/addGoods')}
       onPressIn={handlePressIn}
       onPressOut={handlePressOut}
     >
@@ -188,6 +185,7 @@ const styles = StyleSheet.create({
     flexGrow: 1,
     flexShrink: 1,
     flexBasis: 0,
+    fontFamily: 'Physis'
   },
   buttoncircle: {
     padding: 15,
@@ -265,9 +263,10 @@ const styles = StyleSheet.create({
   },
   textCard:{
     textAlign:'justify',
-    fontFamily: 'SpaceMono',
+    fontFamily: 'Physis',
     gap: 5,
-    
+    lineHeight: 18,
+    marginBottom: 4
   },
   imageView: {
     width: 120, // Set the width of the image
@@ -277,7 +276,8 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     marginLeft: 10,
-    justifyContent: 'center',
+    justifyContent: 'space-evenly',
+    textAlign: 'justify',
     marginTop: 25 
   },
   iconContainer: {

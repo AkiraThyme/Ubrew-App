@@ -46,7 +46,7 @@ const login = () =>  {
 
   return (
     <View style={styles.container}>
-      <Text style={{textAlign: 'center', marginBottom: 15, fontSize: 30, fontFamily: 'SpaceMono', marginTop: 30}}> Login </Text>
+      <Text style={{textAlign: 'center', marginBottom: 15, fontSize: 30, fontFamily: 'Physis', marginTop: 30}}> Login </Text>
       <View style={styles.seperatorView}>
         
         <Text style={styles.seperator}></Text>
@@ -120,7 +120,7 @@ const styles = StyleSheet.create({
       marginVertical: 30,
     },
     seperator: {
-      fontFamily:'SpaceMono',
+      fontFamily:'Physis',
       color: Colors.gray,
     },
     btnOutline: {
@@ -137,6 +137,6 @@ const styles = StyleSheet.create({
     btnOutlineText: {
       color: '#000',
       fontSize: 16,
-      fontFamily: 'SpaceMono',
+      fontFamily: 'Physis',
     },
 })

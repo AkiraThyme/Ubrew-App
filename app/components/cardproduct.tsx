@@ -115,7 +115,7 @@ const styles = StyleSheet.create({
     },
     textCard:{
       textAlign:'justify',
-      fontFamily: 'SpaceMono',
+      fontFamily: 'Physis',
       gap: 5,
       
     },

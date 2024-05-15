@@ -24,7 +24,7 @@ export const defaultStyles = StyleSheet.create({
   btnText: {
     color: '#fff',
     fontSize: 16,
-    fontFamily: 'SpaceMono',
+    fontFamily: 'Physis',
   },
   btnIcon: {
     position: 'absolute',

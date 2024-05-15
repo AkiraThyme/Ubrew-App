@@ -113,7 +113,6 @@ function AddGoods() {
               width: 273,
             }}
             value={`${barcodeValue}`}
-            editable={false}
           />
           <TouchableOpacity onPress={() => router.push('/components/barcode')}>
             <AntDesign name='qrcode' size={20} />

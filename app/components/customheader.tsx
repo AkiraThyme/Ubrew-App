@@ -21,7 +21,7 @@ const CustomHeader = () => {
                 <Link href={'/(admintabs)/product'} asChild>
                   <TouchableOpacity style={styles.srchbtn}>
                     <AntDesign name='search1' size={24}/>
-                    <Text style={{fontFamily: 'SpaceMono', marginLeft: -110}}>Search</Text>
+                    <Text style={{fontFamily: 'Physis', marginLeft: -110}}>Search</Text>
                     <TouchableOpacity style={styles.qrbtn}>
                       <Link push href={'/components/camera'} asChild>
                         <AntDesign name='qrcode' size={20}/>
