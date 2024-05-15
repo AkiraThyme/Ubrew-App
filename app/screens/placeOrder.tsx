@@ -9,6 +9,7 @@ import * as MailComposer from 'expo-mail-composer';
 import { useUser } from '@clerk/clerk-expo';
 import 'react-native-get-random-values';
 import { v4 as uuidv4 } from 'uuid';
+import { router } from 'expo-router';
 
 type CartItem = {
   price: number;
@@ -82,6 +83,7 @@ const PlaceOrder = () => {
         </html>
       `;
       await PRINT.printAsync({ html });
+      router.replace('/(usertabs)/home')
     }
   };
 
