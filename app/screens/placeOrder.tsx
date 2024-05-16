@@ -14,6 +14,7 @@ import { router } from 'expo-router';
 type CartItem = {
   price: number;
   count: number;
+  productName: string;
 };
 
 type DeliveryDetails = {
@@ -31,6 +32,7 @@ type NewDetails = {
 const CART_STORAGE_KEY = '@my_cart';
 const DELIVERY_DETAILS_KEY = '@delivery_details';
 const NEW_DETAILS_KEYS = '@new_detail';
+const COUNT_CART_KEY = '@count';
 
 const PlaceOrder = () => {
   const [orderDetails, setOrderDetails] = useState<DeliveryDetails | null>(null);
@@ -66,7 +68,32 @@ const PlaceOrder = () => {
     loadNewDetails();
   }, []);
 
-  const totalPrice = newDetails?.newprice && cart.reduce((total, product, newprice) => total + 15 + product.price * product.count, 0);
+  // Calculate total price with additional charges based on the payment method
+  const calculateTotalPrice = () => {
+    let baseTotal = cart.reduce((total, product) => total + product.price * product.count, 0);
+    let additionalCharge = 0;
+
+    if (newDetails) {
+      switch (newDetails.paymentmethod) {
+        case 'Cash':
+          additionalCharge = 38;
+          break;
+        case 'Debit Card/Credit Card':
+          additionalCharge = 15;
+          break;
+        case 'Gcash':
+          additionalCharge = 25;
+          break;
+        default:
+          additionalCharge = 0;
+          break;
+      }
+    }
+
+    return baseTotal + additionalCharge;
+  };
+
+  const totalPrice = calculateTotalPrice();
 
   const handlePrint = async () => {
     if (orderDetails && newDetails) {
@@ -77,40 +104,39 @@ const PlaceOrder = () => {
             <p><strong>Order Number:</strong> ${orderNumber}</p>
             <p><strong>Delivery Address:</strong> ${orderDetails.address}</p>
             <p><strong>Description:</strong> ${orderDetails.description}</p>
-            <p><strong>Total:</strong> ₱${newDetails.newprice.toFixed(2)}</p>
             <p><strong>Payment Method:</strong> ${newDetails.paymentmethod}</p>
+            <p><strong>Selected Products:</strong></p>
+            <ul>
+              ${cart.map(product => `<li>${product.productName} - ${product.count} x ₱${product.price}</li>`).join('')}
+            </ul>
+            <p><strong>Total:</strong> ₱${totalPrice.toFixed(2)}</p>
           </body>
         </html>
       `;
-      await PRINT.printAsync({ html });
-      router.replace('/(usertabs)/home')
-    }
-  };
-
-  const handleEmail = async () => {
-    if (orderDetails && newDetails) {
-      await MailComposer.composeAsync({
-        recipients: [user?.primaryEmailAddress?.emailAddress || ''],
-        subject: 'Order Receipt',
-        body: `Order Number: ${orderNumber}\nDelivery Address: ${orderDetails.address}\nDescription: ${orderDetails.description}\nTotal: ₱${newDetails.newprice.toFixed(2)}\nPayment Method: ${newDetails.paymentmethod}`,
-      });
-    }
-  };
-
-  const saveReceiptToFirebase = async () => {
-    if (orderDetails && newDetails) {
       try {
+        // Save to Firebase
         const docRef = await addDoc(collection(dbff, 'receipts'), {
           orderNumber,
           deliveryAddress: orderDetails.address,
           description: orderDetails.description,
-          total: newDetails.newprice,
+          total: totalPrice,
           paymentMethod: newDetails.paymentmethod,
+          selectedProducts: cart,
           timestamp: new Date(),
         });
         console.log('Document written with ID: ', docRef.id);
-      } catch (e) {
-        console.error('Error adding document: ', e);
+
+        // Print receipt
+        await PRINT.printAsync({ html });
+
+        // Clear AsyncStorage data
+        await AsyncStorage.removeItem(CART_STORAGE_KEY);
+        await AsyncStorage.removeItem(DELIVERY_DETAILS_KEY);
+        await AsyncStorage.removeItem(NEW_DETAILS_KEYS);
+
+        router.replace('/(usertabs)/home');
+      } catch (error) {
+        console.error('Error processing order:', error);
       }
     }
   };
@@ -131,15 +157,15 @@ const PlaceOrder = () => {
         <Text style={styles.detailText}><Text style={styles.label}>Delivery Address:</Text> {orderDetails.address}</Text>
         <Text style={styles.detailText}><Text style={styles.label}>Description:</Text> {orderDetails.description}</Text>
         <Text style={styles.detailText}><Text style={styles.label}>Payment Method:</Text> {newDetails.paymentmethod}</Text>
-        <Text style={styles.detailText}><Text style={styles.label}>Total:</Text> ₱{totalPrice?.toFixed(2)}</Text>
+        <Text style={styles.detailText}><Text style={styles.label}>Selected Products:</Text></Text>
+        {cart.map((product, index) => (
+          <Text key={index} style={styles.detailText}>
+            {product.productName} - {product.count} x ₱{product.price} (Total: ₱{product.price * product.count})
+          </Text>
+        ))}
+        <Text style={styles.detailText}><Text style={styles.label}>Total:</Text> ₱{totalPrice.toFixed(2)}</Text>
         <TouchableOpacity style={styles.button} onPress={handlePrint}>
           <Text style={styles.buttonText}>Print Receipt</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={handleEmail}>
-          <Text style={styles.buttonText}>Email Receipt</Text>
-        </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={saveReceiptToFirebase}>
-          <Text style={styles.buttonText}>Save to Firebase</Text>
         </TouchableOpacity>
       </View>
     </ScrollView>

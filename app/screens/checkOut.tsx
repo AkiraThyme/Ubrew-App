@@ -35,7 +35,7 @@ const Checkout = () => {
   const [deliveryOptionPrice, setDeliveryOptionPrice] = useState<number>(0);
   const bottomSheetRef = useRef<BottomSheet>(null);
   const snapPoints = useMemo(() => ['1%', '50%'], []);
-
+  
   useEffect(() => {
     const loadCart = async () => {
       const storedCart = await AsyncStorage.getItem(CART_STORAGE_KEY);
@@ -65,7 +65,7 @@ const Checkout = () => {
 
     const storedTotalPrice = await AsyncStorage.getItem('@total_price');
     const currentTotalPrice = storedTotalPrice ? parseFloat(storedTotalPrice) : 0;
-    const newTotalPrice = currentTotalPrice + price;
+    const newTotalPrice = currentTotalPrice ;
 
     const newDetails: NewDetails = {
       newprice: newTotalPrice,
