@@ -128,7 +128,7 @@ const usersettings = () => {
               <View style={[styles.rowWrapper, styles.rowFirst]}>
                 <TouchableOpacity
                   onPress={() => {
-                    // handle onPress
+                    router.push('/screens/contactUs')
                   }}
                   style={styles.row}>
                   <Text style={styles.rowLabel}>Contact Us</Text>
