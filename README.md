@@ -10,9 +10,11 @@ Second, start the app:
 
 
 This project uses [`expo-font`](https://docs.expo.dev/versions/latest/sdk/font/) to automatically optimize and load Inter, a custom Google Font.
+
+
 This project uses [`expo-icon`](https://icons.expo.fyi/Index) for icons.
 
 ## Learn More
-To learn more about Next.js, take a look at the following resources:
+To learn more about Expo, take a look at the following resources:
 - [Expo React Native Documentation](https://docs.expo.dev/) - learn about Expo features and API.
 
